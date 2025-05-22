@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import NextAuth from 'next-auth';
-import AppleProvider from 'next-auth/providers/apple';
+import NextAuth from "next-auth";
+import AppleProvider from "next-auth/providers/apple";
 
 export default NextAuth({
   providers: [
@@ -10,6 +10,17 @@ export default NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  cookies: {
+    pkceCodeVerifier: {
+      name: "next-auth.pkce.code_verifier",
+      options: {
+        httpOnly: true,
+        sameSite: "none",
+        path: "/",
+        secure: true,
+      },
+    },
+  },
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
