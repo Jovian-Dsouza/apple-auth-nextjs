@@ -5,8 +5,8 @@ import AppleProvider from 'next-auth/providers/apple';
 export default NextAuth({
   providers: [
     AppleProvider({
-      clientId: process.env.APPLE_CLIENT_ID!,
-      clientSecret: process.env.APPLE_CLIENT_SECRET!,
+      clientId: process.env.AUTH_APPLE_ID!,
+      clientSecret: process.env.AUTH_APPLE_SECRET!,
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,

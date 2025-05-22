@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { Geist, Geist_Mono } from "next/font/google";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { useState } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,6 +14,23 @@ const geistMono = Geist_Mono({
 });
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const [copied, setCopied] = useState(false);
+
+  // Safely extract accessToken from session
+  const accessToken =
+    session && typeof session === "object" && "accessToken" in session
+      ? (session as { accessToken?: string }).accessToken
+      : undefined;
+
+  const handleCopy = () => {
+    if (accessToken) {
+      navigator.clipboard.writeText(accessToken);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
+
   return (
     <div
       className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
@@ -25,6 +44,40 @@ export default function Home() {
           height={38}
           priority
         />
+        <div className="flex flex-col items-center gap-4">
+          {status === "authenticated" ? (
+            <>
+              <div className="flex flex-col items-center gap-2">
+                <span className="font-semibold">Access Token:</span>
+                <div className="flex items-center gap-2">
+                  <code className="bg-black/[.05] dark:bg-white/[.06] px-2 py-1 rounded text-xs max-w-xs overflow-x-auto">
+                    {accessToken}
+                  </code>
+                  <button
+                    onClick={handleCopy}
+                    className="flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-xs"
+                  >
+                    {copied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Sign out
+                </button>
+              </div>
+            </>
+          ) : (
+            <button
+              onClick={() => signIn("apple")}
+              className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+            >
+              <Image src="/apple.svg" alt="Apple logo" width={20} height={20} />
+              Sign in with Apple
+            </button>
+          )}
+        </div>
         <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2 tracking-[-.01em]">
             Get started by editing{" "}
