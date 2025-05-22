@@ -12,11 +12,27 @@ export default function Home() {
       ? (session as { accessToken?: string }).accessToken
       : undefined;
 
+  // Safely extract idToken from session
+  const idToken =
+    session && typeof session === "object" && "idToken" in session
+      ? (session as { idToken?: string }).idToken
+      : undefined;
+
+  const [copiedId, setCopiedId] = useState(false);
+
   const handleCopy = () => {
     if (accessToken) {
       navigator.clipboard.writeText(accessToken);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
+    }
+  };
+
+  const handleCopyId = () => {
+    if (idToken) {
+      navigator.clipboard.writeText(idToken);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 1500);
     }
   };
 
@@ -36,6 +52,18 @@ export default function Home() {
                 className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-xs"
               >
                 {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+            <span className="font-semibold text-lg mt-4">ID Token</span>
+            <div className="flex items-center gap-2 w-full">
+              <code className="bg-gray-100 px-2 py-1 rounded text-xs w-full overflow-x-auto">
+                {idToken}
+              </code>
+              <button
+                onClick={handleCopyId}
+                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 text-xs"
+              >
+                {copiedId ? "Copied!" : "Copy"}
               </button>
             </div>
             <button
